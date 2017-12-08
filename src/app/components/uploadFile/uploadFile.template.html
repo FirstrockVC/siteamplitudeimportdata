@@ -1,0 +1,36 @@
+<div class="row marketing">
+    <div class="col-lg-12">
+        <div class="col-lg-12">
+            <div class="bd-example">
+              <form [formGroup]="uploadForm">
+                  <div class="form-group row">
+                      <label class="col-sm-2 col-form-label">Project Key</label>
+                      <div class="col-sm-10">
+                          <input type="text" class="form-control" formControlName="key">
+                          <div [hidden]="uploadForm.controls.key.valid || (uploadForm.controls.key.pristine && !submitted)">
+                              <label class="text-danger">This field is required.</label>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">File (.csv)</label>
+                        <div class="col-sm-10">
+                            <div class="input-group input-file" name="Fichier1">
+                                <input [ngModelOptions]="{standalone: true}" type="file" class="form-control" [(ngModel)]="data" (change)="onFileChange($event)" placeholder='Choose a file...' />
+                                <span class="input-group-btn">
+                                      <button class="btn btn-warning btn-reset" (click)="resetFile()" type="button">Reset</button>
+                                </span>
+                            </div>
+                            <div *ngIf="(!file && submitted)">
+                                <label class="text-danger">This file is required.</label>
+                            </div>
+                        </div>
+                      </div>
+                  <div class="form-group">
+                      <button type="submit" (click)="onValidate(uploadForm.valid)" style="width: 100%;" class="btn btn-primary">Submit</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+    </div>
+  </div>
