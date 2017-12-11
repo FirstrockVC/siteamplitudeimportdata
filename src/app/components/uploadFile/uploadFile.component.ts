@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import  { UploadFileService} from './uploadFile.service';
 import * as csv from "csvtojson"
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import swal from 'sweetalert2';
 
 @Component({
@@ -37,38 +38,55 @@ export class UploadFileComponent {
       let reader = new FileReader();
       reader.readAsText(this.file);
       reader.onload = () => {
-        let text = reader.result;
-        var options = {
-          headers : "hola, juan, serna"
-        };
+      let text = reader.result;
         csv({
           noheader: false,
           headers: ['event_type','user_id','time']
-        }).fromString(text, options).on('json',(json)=>{
-          events.push(json);
-          }).on('done',()=>{
-            const promises = [];
-            for(let i = 0; i< events.length; i = i + 1000) {
-              promises.push(this.uploadFile(events, i , + i + 1000));
-            }
-            Promise.all(promises).then(values => {
-              this.resetFile();
-              this.uploadForm.reset();
-              swal({
-                title: 'Success',
-                text: 'The data was imported correctly',
-                type: 'success'
-              });
-            }).catch(e => {
-              swal({
-                title: 'Error!',
-                text: 'An error occurs when importing the data',
-                type: 'error'
-              });
+        })
+        .fromString(text)
+        .transf((json,csvRow)=> {
+          if (!this.validateTime(csvRow[0]) && !this.validateTime(csvRow[1]) &&
+            this.validateTime(csvRow[2])){
+            json.time = moment(json.time).unix();
+            events.push(json);
+          }else{
+            swal({
+              title: 'Error!',
+              html:'Wrong file format, please download the example file <a href="/assets/example.csv" target="_blank">File</a>!!',
+              type: 'error'
             });
-        });
-        }
+          }
+        })
+        .on('done',(error)=>{
+            if (events.length > 0){
+              const promises = [];
+              for(let i = 0; i< events.length; i = i + 1000) {
+                promises.push(this.uploadFile(events, i , + i + 1000));
+              }
+              Promise.all(promises).then(values => {
+                this.resetFile();
+                this.uploadForm.reset();
+                swal({
+                  title: 'Success',
+                  text: 'The data was imported correctly',
+                  type: 'success'
+                });
+              }).catch(e => {
+                swal({
+                  title: 'Error!',
+                  text: 'An error occurs when importing the data',
+                  type: 'error'
+                });
+              });
+            }
+        })
+      }
     };
+  }
+
+  public validateTime(data){
+    let isnum = /^\d+$/.test(data);
+    return moment(isnum ? Number(data) : data).isValid() && data.length >= 10;
   }
 
   public resetFile(){
