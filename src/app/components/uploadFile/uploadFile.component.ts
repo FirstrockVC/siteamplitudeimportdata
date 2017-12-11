@@ -52,7 +52,7 @@ export class UploadFileComponent {
           }else{
             swal({
               title: 'Error!',
-              html:'Wrong file format, please download the example file <a href="/assets/example.csv" target="_blank">File</a>!!',
+              html:'Wrong file format, please download the example file <a href="./assets/example.csv" target="_blank">File</a>!!',
               type: 'error'
             });
           }
