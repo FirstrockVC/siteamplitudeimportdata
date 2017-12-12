@@ -179,7 +179,7 @@ var UploadFileComponent = (function () {
                     .transf(function (json, csvRow) {
                     if (!_this.validateTime(csvRow[0]) && !_this.validateTime(csvRow[1]) &&
                         _this.validateTime(csvRow[2])) {
-                        json.time = __WEBPACK_IMPORTED_MODULE_5_moment__(json.time).unix();
+                        json.time = _this.convertTime(json.time);
                         events_1.push(json);
                     }
                     else {
@@ -220,6 +220,10 @@ var UploadFileComponent = (function () {
     UploadFileComponent.prototype.validateTime = function (data) {
         var isnum = /^\d+$/.test(data);
         return __WEBPACK_IMPORTED_MODULE_5_moment__(isnum ? Number(data) : data).isValid() && data.length >= 10;
+    };
+    UploadFileComponent.prototype.convertTime = function (time) {
+        var isnum = /^\d+$/.test(time);
+        return isnum ? time : __WEBPACK_IMPORTED_MODULE_5_moment__(time).unix();
     };
     UploadFileComponent.prototype.resetFile = function () {
         this.file = null;
