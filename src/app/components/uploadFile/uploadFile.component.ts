@@ -47,7 +47,7 @@ export class UploadFileComponent {
         .transf((json,csvRow)=> {
           if (!this.validateTime(csvRow[0]) && !this.validateTime(csvRow[1]) &&
             this.validateTime(csvRow[2])){
-            json.time = moment(json.time).unix();
+            json.time = this.convertTime(json.time);
             events.push(json);
           }else{
             swal({
@@ -87,6 +87,11 @@ export class UploadFileComponent {
   public validateTime(data){
     let isnum = /^\d+$/.test(data);
     return moment(isnum ? Number(data) : data).isValid() && data.length >= 10;
+  }
+
+  public convertTime(time){
+    let isnum = /^\d+$/.test(time);
+    return isnum ? time :  moment(time).unix();
   }
 
   public resetFile(){
